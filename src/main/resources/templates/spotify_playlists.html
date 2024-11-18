@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Spotify Playlists</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .flex-column {
+            flex-direction: column;
+        }
+
+        .justify-content-center {
+            justify-content: center;
+        }
+
+        .flex-grow-1 {
+            flex-grow: 1;
+        }
+
+        .btn-spotify {
+            background-color: #1DB954;
+            color: white;
+        }
+
+        .btn-spotify:hover {
+            background-color: #1AA34A;
+            color: white;
+        }
+
+        .navbar-brand {
+            font-size: 2rem;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        table {
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .welcome-message {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-image {
+            height: 64px;
+            width: 64px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-center">
+        <a class="navbar-brand" href="#">PlayList Converter</a>
+    </nav>
+
+    <div class="container flex-grow-1 d-flex flex-column align-items-center">
+        <div class="welcome-message">
+            <img th:src="${image_url}" alt="User Image" class="user-image">
+            <p>Welcome, <span th:text="${username}"></span>!</p>
+        </div>
+        <div class="text-center mt-5">
+            <h1 class="display-4">Spotify Playlists</h1>
+            <p class="lead">Select a playlist to view and convert it to a YouTube playlist.</p>
+        </div>
+        <div class="table-responsive w-100">
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Playlist Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="playlist : ${playlists['items']}">
+                        <td th:text="${playlist['name']}"></td>
+                        <td>
+                            <form th:action="@{/viewSpotifyPlaylist}" method="post">
+                                <input type="hidden" th:value="${playlist['id']}" name="playlistId" />
+                                <input type="hidden" th:value="${playlist['name']}" name="playlistName" />
+                                <button type="submit" class="btn btn-spotify">
+                                    <i class="fab fa-spotify"></i> View Playlist
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto">
+        <div class="container">
+            <span>&copy; 2024 PlayList Converter. All Rights Reserved.</span>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

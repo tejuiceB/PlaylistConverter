@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Playlist Converted</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .flex-column {
+            flex-direction: column;
+        }
+
+        .justify-content-center {
+            justify-content: center;
+        }
+
+        .flex-grow-1 {
+            flex-grow: 1;
+        }
+
+        .btn-spotify {
+            background-color: #1DB954;
+            color: white;
+        }
+
+        .btn-spotify:hover {
+            background-color: #1AA34A;
+            color: white;
+        }
+
+        .navbar-brand {
+            font-size: 2rem;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .social-icons .btn {
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-center">
+        <a class="navbar-brand" href="#">PlayList Converter</a>
+    </nav>
+
+    <div class="container flex-grow-1 d-flex justify-content-center align-items-center">
+        <div class="text-center">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="display-4">Playlist Converted</h1>
+                    <p class="lead">Your playlist has been successfully created. You can access it using the link below:</p>
+                    <a th:href="${url}" target="_blank" class="btn btn-spotify btn-lg mt-3">
+                        <i class="fab fa-spotify"></i> View Playlist on Spotify
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p class="text-muted">Thank you for using PlayList Converter!</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto">
+        <div class="container">
+            <span>&copy; 2024 PlayList Converter. All Rights Reserved.</span>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

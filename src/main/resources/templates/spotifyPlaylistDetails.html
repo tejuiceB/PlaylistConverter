@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Spotify Playlist Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .flex-column {
+            flex-direction: column;
+        }
+
+        .justify-content-center {
+            justify-content: center;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .flex-grow-1 {
+            flex-grow: 1;
+        }
+
+        .navbar-brand {
+            font-size: 2rem;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        table {
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .table-header {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .btn-convert {
+            background-color: #1DB954;
+            color: white;
+        }
+
+        .btn-convert:hover {
+            background-color: #1AA34A;
+            color: white;
+        }
+
+        .checkbox-select-all {
+            margin-right: 10px;
+        }
+
+        .page-header {
+            margin-bottom: 20px;
+        }
+    </style>
+    <script>
+        function selectAllTracks(source) {
+            const checkboxes = document.getElementsByName('selectedTracks');
+            for (let i = 0, n = checkboxes.length; i < n; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    </script>
+</head>
+<body class="d-flex flex-column">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-center">
+        <a class="navbar-brand" href="#">PlayList Converter</a>
+    </nav>
+
+    <div class="container flex-grow-1 d-flex flex-column align-items-center">
+        <div class="text-center mt-5 page-header">
+            <h1 class="display-4">Spotify Playlist Details</h1>
+            <h2 th:text="${playlistName}" class="my-3"></h2>
+        </div>
+        <form method="post" th:action="@{/spotify_convert}" class="w-100">
+            <input type="hidden" name="playlistName" th:value="${playlistName}" />
+            <table class="table table-striped table-hover">
+                <thead class="table-header">
+                    <tr>
+                        <th>
+                            <input type="checkbox" class="checkbox-select-all" onclick="selectAllTracks(this)" /> Select All
+                        </th>
+                        <th>Track Name</th>
+                        <th>Artist</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${tracks.tracks.items}">
+                        <td>
+                            <input type="checkbox" name="selectedTracks" th:value="${item.track.name}" />
+                            <input type="hidden" name="selectedArtists" th:value="${item.track.artists[0].name}" />
+                        </td>
+                        <td th:text="${item.track.name}">Track Name</td>
+                        <td th:text="${item.track.artists[0].name}">Artist</td>
+                    </tr> 
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-convert btn-lg mt-3">
+                <i class="fas fa-sync-alt"></i> Convert
+            </button>
+        </form>
+    </div>
+
+    <footer class="footer mt-auto">
+        <div class="container">
+            <span>&copy; 2024 PlayList Converter. All Rights Reserved.</span>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
