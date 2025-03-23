@@ -18,6 +18,130 @@
 - **YouTube Data API v3**: Fetches and manages YouTube playlists.
 - **OAuth**: Secure authentication for accessing user accounts.
 
+## YouTube API Quota Information
+- Create playlist: 50 units
+- Search for video: 100 units per search
+- Add video to playlist: 50 units per addition
+- Daily total limit: 10,000 units
+
+For a 10-track playlist conversion:
+- Playlist creation: 50 units
+- 10 searches: 1000 units
+- 10 additions: 500 units
+- Total: ~1550 units per conversion
+
+This allows approximately 6-7 playlist conversions per day while staying within quota limits.
+
+## Setup Instructions
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/PlaylistConverter.git
+cd PlaylistConverter
+```
+
+2. Configure API Credentials:
+   - Create a Spotify Developer account and get API credentials
+   - Create a Google Cloud Project and enable YouTube Data API v3
+   - Update `src/main/resources/application.properties` with your credentials
+
+3. Set environment variables (for Codespaces):
+```bash
+export REDIRECT_URI=https://your-codespace-name-3000.app.github.dev
+```
+
+4. Build and run the project:
+```bash
+chmod +x mvnw
+./mvnw clean install
+./mvnw spring-boot:run
+```
+
+5. Access the application:
+   - Local: http://localhost:3000
+   - Codespaces: https://your-codespace-name-3000.app.github.dev
+
+## Usage Tips
+1. Start with smaller playlists (up to 10 tracks) to manage quota limits
+2. Allow delays between conversions (built into the application)
+3. Monitor your YouTube API quota usage in Google Cloud Console
+4. For larger playlists, consider breaking them into smaller chunks
+
+## Troubleshooting
+- If conversion fails, check the YouTube API quota in Google Cloud Console
+- Ensure all redirect URIs match exactly in both API dashboards
+- Clear browser cache if authentication issues occur
+- Check application logs for detailed error messages
+
+## Project Flow
+
+```mermaid
+graph TD
+    A[Landing Page] --> B{Choose Conversion}
+    B -->|Spotify to YouTube| C[Login to Spotify]
+    B -->|YouTube to Spotify| D[Login to YouTube]
+    
+    C --> E[OAuth Authentication]
+    E --> F[View Spotify Playlists]
+    F --> G[Select Playlist]
+    G --> H[Select Tracks]
+    H --> I[Convert to YouTube]
+    I --> J[View Result]
+
+    D --> K[OAuth Authentication]
+    K --> L[View YouTube Playlists]
+    L --> M[Select Playlist]
+    M --> N[Select Tracks]
+    N --> O[Convert to Spotify]
+    O --> P[View Result]
+```
+
+### Application Flow Explanation
+
+1. **User Authentication Flow**:
+   - User starts at landing page
+   - Chooses conversion direction (Spotify → YouTube or YouTube → Spotify)
+   - Authenticates with source platform using OAuth
+   - Authenticates with destination platform
+
+2. **Spotify to YouTube Conversion**:
+   - User logs in to Spotify (OAuth)
+   - Views list of Spotify playlists
+   - Selects playlist to convert
+   - Chooses specific tracks
+   - System creates YouTube playlist
+   - For each track:
+     * Searches YouTube for best match
+     * Adds video to playlist
+   - Shows result with YouTube playlist link
+
+3. **YouTube to Spotify Conversion**:
+   - User logs in to YouTube (OAuth)
+   - Views list of YouTube playlists
+   - Selects playlist to convert
+   - Chooses specific tracks
+   - System creates Spotify playlist
+   - For each track:
+     * Searches Spotify for best match
+     * Adds track to playlist
+   - Shows result with Spotify playlist link
+
+4. **API Quota Management**:
+   - YouTube API daily limits:
+     * Create playlist: 50 units
+     * Search: 100 units/search
+     * Add track: 50 units/addition
+   - Batch processing for efficiency
+   - Delays between API calls
+   - Maximum 10 tracks per conversion
+
+5. **Error Handling**:
+   - OAuth authentication errors
+   - API quota exceeded
+   - Track not found
+   - Network issues
+   - Rate limiting
+
 ## Screenshots
 ![Screenshot (21)](https://github.com/user-attachments/assets/69dae491-f543-41c0-b097-c8b162fceb0e)
 ![Screenshot (22)](https://github.com/user-attachments/assets/6591e114-c50c-4c59-bfe3-4cbb9c7f9b80)

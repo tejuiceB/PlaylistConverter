@@ -66,7 +66,9 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h1 class="display-4">Playlist Converted</h1>
-                    <p class="lead">Your playlist has been successfully created. You can access it using the link below:</p>
+                    <p class="lead">Successfully added <span th:text="${successCount}">0</span> out of <span th:text="${totalTracks}">0</span> tracks.</p>
+                    <p th:if="${warning}" class="alert alert-warning" th:text="${warning}"></p>
+                    <p>Note: Converting up to 10 tracks at a time to manage API quotas.</p>
                     <a th:href="${url}" target="_blank" class="btn btn-youtube btn-lg mt-3">
                         <i class="fab fa-youtube"></i> View Playlist on YouTube
                     </a>

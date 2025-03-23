@@ -26,16 +26,16 @@ public class YoutubeService {
 
     @Value("${youtube.response.type}")
     private String response_type;
-    
+
     @Value("${youtube.scope}")
     private String scope;
-    
+
     @Value("${youtube.client.secret}")
     private String client_secret;
 
     @Value("${youtube.grant.type}")
     private String grant_type;
-    
+
     private String code;
     private String access_token;
 
@@ -94,114 +94,153 @@ public class YoutubeService {
         HttpClient client = HttpClient.newHttpClient();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Map<String, Object> snippet = new HashMap<>();
-        snippet.put("title", name);
-
-        Map<String, Object> jsonInput = new HashMap<>();
-        jsonInput.put("snippet", snippet);
-
         try {
-            String requestBody = objectMapper.writeValueAsString(jsonInput);
+            // Add status object for public visibility
+            Map<String, Object> snippet = new HashMap<>();
+            snippet.put("title", name);
+            snippet.put("privacy", "public");
 
+            Map<String, Object> status = new HashMap<>();
+            status.put("privacyStatus", "public");
+
+            Map<String, Object> jsonInput = new HashMap<>();
+            jsonInput.put("snippet", snippet);
+            jsonInput.put("status", status);
+
+            String requestBody = objectMapper.writeValueAsString(jsonInput);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("https://www.googleapis.com/youtube/v3/playlists?access_token=" + access_token + "&part=id,snippet"))
+                    .uri(new URI("https://www.googleapis.com/youtube/v3/playlists?access_token=" + access_token
+                            + "&part=id,snippet,status"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                     .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 403) {
+                throw new RuntimeException("YouTube API quota exceeded. Please try again later.");
+            }
+
             String responseBody = response.body();
             Map<String, Object> jsonResponse = objectMapper.readValue(responseBody, Map.class);
             playlistId = (String) jsonResponse.get("id");
 
+            // Add delay to avoid quota issues
+            Thread.sleep(1000);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error creating playlist: " + e.getMessage());
+            throw new RuntimeException("Failed to create playlist: " + e.getMessage());
         }
 
         return playlistId;
     }
 
     public String getVideoID(String query) {
-        String videoId = null;
-        HttpClient client = HttpClient.newHttpClient();
-        ObjectMapper objectMapper = new ObjectMapper();
-
         try {
-            String encodedQuery = java.net.URLEncoder.encode(query, StandardCharsets.UTF_8);
+            Thread.sleep(2000); // Respect quota limits
 
-            URI uri = new URI("https://www.googleapis.com/youtube/v3/search?access_token=" + access_token + "&part=snippet&maxResults=1&q=" + encodedQuery + "&type=video");
+            String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+            String url = String.format("https://www.googleapis.com/youtube/v3/search" +
+                    "?access_token=%s" +
+                    "&part=snippet" +
+                    "&maxResults=1" +
+                    "&q=%s" +
+                    "&type=video" +
+                    "&videoCategoryId=10", // Music category
+                    access_token, encodedQuery);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .header("Accept", "application/json")
-                    .GET()
-                    .build();
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Accept", "application/json");
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            String responseBody = response.body();
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
 
-            Map<String, Object> jsonResponse = objectMapper.readValue(responseBody, Map.class);
-            var items = (java.util.List<Map<String, Object>>) jsonResponse.get("items");
-
-            if (items != null && !items.isEmpty()) {
-                var firstItem = (Map<String, Object>) items.get(0);
-                var id = (Map<String, Object>) firstItem.get("id");
-                videoId = (String) id.get("videoId");
+            if (response.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> responseBody = response.getBody();
+                if (responseBody != null && responseBody.containsKey("items")) {
+                    List<Map<String, Object>> items = (List<Map<String, Object>>) responseBody.get("items");
+                    if (!items.isEmpty()) {
+                        Map<String, Object> firstItem = items.get(0);
+                        Map<String, Object> id = (Map<String, Object>) firstItem.get("id");
+                        String videoId = (String) id.get("videoId");
+                        System.out.println("Found video ID: " + videoId + " for query: " + query);
+                        return videoId;
+                    }
+                }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error searching video for: " + query + " - " + e.getMessage());
         }
-
-        return videoId;
+        return null;
     }
 
     public void addTrack(String trackId, String playListId) {
-
-        HttpClient client = HttpClient.newHttpClient();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        Map<String, Object> resourceId = new HashMap<>();
-        resourceId.put("kind", "youtube#video");
-        resourceId.put("videoId", trackId);
-
-        Map<String, Object> snippet = new HashMap<>();
-        snippet.put("playlistId", playListId);
-        snippet.put("resourceId", resourceId);
-
-        Map<String, Object> jsonInput = new HashMap<>();
-        jsonInput.put("snippet", snippet);
+        if (trackId == null || playListId == null) {
+            return;
+        }
 
         try {
-            String requestBody = objectMapper.writeValueAsString(jsonInput);
+            // Add delay between additions
+            Thread.sleep(2000);
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI("https://www.googleapis.com/youtube/v3/playlistItems?access_token=" + access_token + "&part=contentDetails,id,snippet,status"))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
-                    .build();
+            String url = "https://www.googleapis.com/youtube/v3/playlistItems" +
+                    "?part=snippet" +
+                    "&access_token=" + access_token;
 
-            client.send(request, HttpResponse.BodyHandlers.ofString());
+            Map<String, Object> snippet = new HashMap<>();
+            snippet.put("playlistId", playListId);
+            snippet.put("resourceId", Map.of(
+                    "kind", "youtube#video",
+                    "videoId", trackId));
+
+            Map<String, Object> body = new HashMap<>();
+            body.put("snippet", snippet);
+
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+            restTemplate.postForEntity(url, request, Map.class);
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error adding track: " + e.getMessage());
         }
     }
 
     public Map<String, Object> getPlayLists() {
-        String url = "https://www.googleapis.com/youtube/v3/playlists?access_token=" + access_token +"&mine=true&part=snippet&maxResults=50";
-        RestTemplate restTemplate = new RestTemplate();
+        try {
+            // Add delay to avoid quota issues
+            Thread.sleep(1000);
 
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, null, Map.class);
+            String url = "https://www.googleapis.com/youtube/v3/playlists?access_token=" + access_token
+                    + "&mine=true&part=snippet&maxResults=50";
+            RestTemplate restTemplate = new RestTemplate();
 
-        return response.getBody();
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, null, Map.class);
+
+            return response.getBody();
+        } catch (HttpClientErrorException.Forbidden e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "YouTube API quota exceeded. Please try again tomorrow.");
+            return errorResponse;
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to get playlists: " + e.getMessage());
+            return errorResponse;
+        }
     }
 
     public Map<String, Object> getVideoLists(String playlistId) {
-        String url = "https://www.googleapis.com/youtube/v3/playlistItems?access_token=" + access_token + "&playlistId=" + playlistId + "&part=snippet&maxResults=50";
+        String url = "https://www.googleapis.com/youtube/v3/playlistItems?access_token=" + access_token + "&playlistId="
+                + playlistId + "&part=snippet&maxResults=50";
         RestTemplate restTemplate = new RestTemplate();
 
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, null, Map.class);
 
         return response.getBody();
     }
-} 
+}
