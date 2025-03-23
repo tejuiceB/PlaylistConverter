@@ -82,4 +82,4 @@ Run tests with coverage:
 ## Support
 - Email: support@playlistconverter.com
 - GitHub Issues: [Create Issue](https://github.com/yourusername/PlaylistConverter/issues)
-- Documentation: [Wiki](https://github.com/yourusername/PlaylistConverter/wiki)
+- Documentation: [Wiki]([https://github.com/yourusername/PlaylistConverter/wiki](https://github.com/tejuiceB/PlaylistConverter/wiki))
