@@ -1,0 +1,16 @@
+# Server Configuration
+server.port=3000
+
+# Spotify Configuration
+spotify.client.id=${SPOTIFY_CLIENT_ID}
+spotify.client.secret=${SPOTIFY_CLIENT_SECRET}
+spotify.redirect.uri=${REDIRECT_URI:http://localhost:3000}/spotify_callback
+spotify.scope=playlist-read-private playlist-modify-private user-read-private
+
+# YouTube Configuration
+youtube.client.id=${YOUTUBE_CLIENT_ID}
+youtube.client.secret=${YOUTUBE_CLIENT_SECRET}
+youtube.redirect.uri=${REDIRECT_URI:http://localhost:3000}/youtube_callback
+youtube.response.type=code
+youtube.scope=https://www.googleapis.com/auth/youtube
+youtube.grant.type=authorization_code

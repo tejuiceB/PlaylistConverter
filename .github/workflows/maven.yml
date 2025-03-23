@@ -26,22 +26,32 @@ jobs:
         java-version: ${{ matrix.java }}
         distribution: 'temurin'
         cache: 'maven'
+        java-package: 'jdk'
+        check-latest: true
 
-    - name: Cache Maven packages
-      uses: actions/cache@v3
+    - name: Maven Dependency Cache
+      uses: actions/cache@v4
       with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        path: |
+          ~/.m2/repository
+          !~/.m2/repository/com/example
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          ${{ runner.os }}-m2
+          ${{ runner.os }}-maven-
 
-    - name: Set REDIRECT_URI in application.properties
+    - name: Check application.properties
       run: |
+        if [ ! -f "src/main/resources/application.properties" ]; then
+          echo "Creating application.properties from template"
+          cp src/main/resources/application.properties.template src/main/resources/application.properties || exit 1
+        fi
         sed -i "s|REDIRECT_URI=.*|REDIRECT_URI=${{ secrets.REDIRECT_URI }}|g" src/main/resources/application.properties
 
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
-      continue-on-error: false
+      run: |
+        ./mvnw -B clean verify
+      env:
+        MAVEN_OPTS: "-Xmx4g"
 
     - name: Run Tests
       run: mvn test
@@ -71,7 +81,7 @@ jobs:
       run: mvn dependency-check:check
 
     - name: Upload Build Artifact
-      if: matrix.java == '17'
+      if: matrix.java == '17' && success()
       uses: actions/upload-artifact@v4  # Updated to v4
       with:
         name: playlist-converter
