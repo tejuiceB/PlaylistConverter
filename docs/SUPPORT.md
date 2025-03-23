@@ -44,7 +44,10 @@ A: Some tracks may not have exact matches on the target platform.
 - HTTPS encryption
 
 ### Privacy Policy
-See our [Privacy Policy](PRIVACY.md) for details on data handling.
+For detailed information about data handling and privacy, see our [Privacy Policy](PRIVACY.md).
+
+### Architecture
+For technical details about the system architecture, see our [Architecture Documentation](ARCHITECTURE.md).
 
 ## Feature Requests
 Submit feature requests through:

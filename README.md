@@ -109,10 +109,14 @@ graph TD
 ### API Integration
 Detailed API documentation can be found in our [API Docs](docs/README.md).
 
+### Technical Architecture
+View our detailed system architecture in the [Architecture Documentation](docs/ARCHITECTURE.md).
+
 ### Support and Community
 - Technical Support: [Support Guide](docs/SUPPORT.md)
 - Email Templates: [Email Templates](docs/emails/TEMPLATES.md)
 - Community Guidelines: [Contributing](CONTRIBUTING.md)
+- Privacy Policy: [Privacy Policy](docs/PRIVACY.md)
 
 ### Development Setup
 For detailed development setup instructions, visit our [Wiki](wiki/WIKI.md).

@@ -57,6 +57,8 @@ Welcome to the PlayList Converter wiki! Here you'll find detailed information ab
 ## Technical Details
 
 ### System Architecture
+For detailed architecture information, see our [Architecture Documentation](../docs/ARCHITECTURE.md).
+
 - Built with Spring Boot 2.7.18
 - Uses OAuth 2.0 for secure authentication
 - RESTful API integration with both platforms
@@ -116,6 +118,7 @@ Welcome to the PlayList Converter wiki! Here you'll find detailed information ab
 - Technical Support: tech.support@playlistconverter.com
 - Feature Requests: features@playlistconverter.com
 - Bug Reports: bugs@playlistconverter.com
+- Privacy Concerns: [Privacy Policy](../docs/PRIVACY.md)
 
 ### Community
 - GitHub Discussions: [Join the conversation](https://github.com/yourusername/PlaylistConverter/discussions)
