@@ -52,4 +52,4 @@ Submit feature requests through:
 2. Email: features@playlistconverter.com
 
 ## Contributing
-See [CONTRIBUTING.md](../CONTRIBUTING.md) for development guidelines.
+See [CONTRIBUTING.md](https://github.com/tejuiceB/PlaylistConverter/blob/main/CONTRIBUTING.md) for development guidelines.

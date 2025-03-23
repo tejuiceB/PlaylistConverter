@@ -77,24 +77,45 @@ chmod +x mvnw
 
 ```mermaid
 graph TD
-    A[Landing Page] --> B{Choose Conversion}
-    B -->|Spotify to YouTube| C[Login to Spotify]
-    B -->|YouTube to Spotify| D[Login to YouTube]
+    Start[Landing Page] --> Auth{Choose Authentication}
+    Auth -->|Spotify| SpotifyAuth[Connect Spotify]
+    Auth -->|YouTube| YouTubeAuth[Connect YouTube]
     
-    C --> E[OAuth Authentication]
-    E --> F[View Spotify Playlists]
-    F --> G[Select Playlist]
-    G --> H[Select Tracks]
-    H --> I[Convert to YouTube]
-    I --> J[View Result]
-
-    D --> K[OAuth Authentication]
-    K --> L[View YouTube Playlists]
-    L --> M[Select Playlist]
-    M --> N[Select Tracks]
-    N --> O[Convert to Spotify]
-    O --> P[View Result]
+    SpotifyAuth --> SpotifyOAuth[OAuth 2.0]
+    SpotifyOAuth --> SpotifyPlaylists[View Playlists]
+    
+    YouTubeAuth --> YouTubeOAuth[OAuth 2.0]
+    YouTubeOAuth --> YouTubePlaylists[View Playlists]
+    
+    SpotifyPlaylists --> SelectPlaylist[Select Playlist]
+    YouTubePlaylists --> SelectPlaylist
+    
+    SelectPlaylist --> SelectTracks[Choose Tracks]
+    SelectTracks --> Quota{Check Quota}
+    
+    Quota -->|Within Limits| Convert[Convert Playlist]
+    Quota -->|Exceeded| Error[Show Error]
+    
+    Convert --> BatchProcess[Process in Batches]
+    BatchProcess --> AddTracks[Add Tracks]
+    AddTracks --> Result[Show Result]
+    
+    Error --> Retry[Try Later]
+    Retry --> Quota
 ```
+
+## Extended Documentation
+
+### API Integration
+Detailed API documentation can be found in our [API Docs](docs/README.md).
+
+### Support and Community
+- Technical Support: [Support Guide](docs/SUPPORT.md)
+- Email Templates: [Email Templates](docs/emails/TEMPLATES.md)
+- Community Guidelines: [Contributing](CONTRIBUTING.md)
+
+### Development Setup
+For detailed development setup instructions, visit our [Wiki](wiki/WIKI.md).
 
 ### Application Flow Explanation
 
@@ -142,18 +163,28 @@ graph TD
    - Network issues
    - Rate limiting
 
-## Screenshots
-![Screenshot (21)](https://github.com/user-attachments/assets/69dae491-f543-41c0-b097-c8b162fceb0e)
-![Screenshot (22)](https://github.com/user-attachments/assets/6591e114-c50c-4c59-bfe3-4cbb9c7f9b80)
-![Screenshot (23)](https://github.com/user-attachments/assets/d836fb28-fec7-4d8f-8081-e0f73283a638)
-![Screenshot (24)](https://github.com/user-attachments/assets/938584c8-5b88-4894-a666-0217a4d1d5bd)
-![Screenshot (27)](https://github.com/user-attachments/assets/52633621-afdf-436f-8f89-8474f0d4679f)
-![Screenshot (28)](https://github.com/user-attachments/assets/fa56e06c-7b4e-45cd-a428-4f7c1c65dec9)
-![Screenshot (29)](https://github.com/user-attachments/assets/9da6729b-3eb6-47ca-ba5d-9afee1d4e9a2)
+## Usage Flow
+1. **Landing Page**: Connect your accounts
+   ![Landing Page](https://github.com/tejuiceB/PlaylistConverter/blob/main/src/main/java/com/example/demo/Screenshot/landing.png)
+
+2. **Service Connection**: Choose your platforms
+   ![Connect Services](https://github.com/tejuiceB/PlaylistConverter/blob/main/src/main/java/com/example/demo/Screenshot/connect.png)
+
+3. **Authentication**: Login to your accounts
+   ![Login](https://github.com/tejuiceB/PlaylistConverter/blob/main/src/main/java/com/example/demo/Screenshot/login.png)
+
+4. **View Playlists**: Select from your playlists
+   ![Playlists](https://github.com/tejuiceB/PlaylistConverter/blob/main/src/main/java/com/example/demo/Screenshot/ShowPlaylist.png)
+   ![YouTube Playlists](https://github.com/tejuiceB/PlaylistConverter/blob/main/src/main/java/com/example/demo/Screenshot/ytPlaylist.png)
+
 ![Screenshot (30)](https://github.com/user-attachments/assets/bd7cad4c-168b-43c0-9b21-1ff34731e371)
 ![Screenshot (38)](https://github.com/user-attachments/assets/6e50adb8-a9ac-419b-b8f5-089a0eee997a)
 ![Screenshot (35)](https://github.com/user-attachments/assets/97cc2a95-81ae-44c4-bfec-4b4a7da9afc0)
 ![Screenshot (37)](https://github.com/user-attachments/assets/fad963d9-ed86-462a-a222-23075aaf240c)
+
+## Community
+- Join our Telegram group: [PlaylistConverter Community](https://t.me/+TwGNOCbIKrM5M2I1)
+- Check out our [Contributing Guidelines](https://github.com/tejuiceB/PlaylistConverter/blob/main/CONTRIBUTING.md)
 
 
 
