@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import java.util.Map;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,15 +12,20 @@ import com.example.demo.service.SpotifyService;
 
 @Controller
 public class SpotifyController {
-    
+
     @Autowired
     private SpotifyService spotifyService;
 
     @GetMapping("/spotify_playlists")
     public String getPlaylists(
             @RequestParam(defaultValue = "20") int limit,
-            @RequestParam(defaultValue = "0") int offset, Model model) {
+            @RequestParam(defaultValue = "0") int offset, Model model, HttpSession session) {
         Map<String, Object> playlists = spotifyService.getPlaylists(limit, offset);
+
+        if (playlists.containsKey("error")) {
+            session.removeAttribute("spotify_authenticated");
+            return "redirect:/spotify_login";
+        }
 
         model.addAttribute("playlists", playlists);
 
@@ -31,7 +37,7 @@ public class SpotifyController {
 
         return "spotify_playlists";
     }
-    
+
     @PostMapping("/viewSpotifyPlaylist")
     public String viewPlaylist(@RequestParam String playlistId, @RequestParam String playlistName, Model model) {
         Map<String, Object> tracks = spotifyService.getTrackList(playlistId);

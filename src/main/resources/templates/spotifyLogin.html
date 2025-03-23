@@ -2,80 +2,96 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>PlayList Converter</title>
+    <title>Connect Spotify - PlayList Converter</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
-        body,
-        html {
+        body, html {
             height: 100%;
             margin: 0;
-            background-color: #f8f9fa;
-        }
-
-        .d-flex {
-            display: flex;
-        }
-
-        .flex-column {
-            flex-direction: column;
-        }
-
-        .justify-content-center {
-            justify-content: center;
-        }
-
-        .align-items-center {
-            align-items: center;
-        }
-
-        .flex-grow-1 {
-            flex-grow: 1;
-        }
-
-        .btn-spotify {
-            background-color: #1DB954;
+            background: linear-gradient(135deg, #1DB954 0%, #191414 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
         }
 
+        .login-container {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+        }
+
+        .spotify-icon {
+            font-size: 4rem;
+            color: #1DB954;
+            margin-bottom: 20px;
+        }
+
+        .btn-spotify {
+            background: #1DB954;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .btn-spotify:hover {
-            background-color: #1AA34A;
+            background: #1ed760;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(29,185,84,0.3);
             color: white;
         }
 
         .navbar-brand {
             font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #1DB954 0%, #191414 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .footer {
-            background-color: #343a40;
-            color: white;
-            text-align: center;
-            padding: 1rem 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffffff80;
+            padding: 20px 0;
         }
     </style>
 </head>
-<body class="d-flex flex-column">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-center">
-        <a class="navbar-brand" href="#">PlayList Converter</a>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand mx-auto" href="/">PlayList Converter</a>
+        </div>
     </nav>
 
-    <div class="container flex-grow-1 d-flex flex-column justify-content-center align-items-center">
-        <div class="text-center">
-            <h1 class="display-4">Now connect your Spotify Account</h1>
-            <p class="lead">To start converting your playlists, log in to your Spotify account.</p>
-            <a href="/spotify_login" class="btn btn-spotify btn-lg mt-3">
-                <i class="fab fa-spotify"></i> Login to Spotify
+    <div class="container flex-grow-1 d-flex justify-content-center align-items-center">
+        <div class="login-container">
+            <i class="fab fa-spotify spotify-icon"></i>
+            <h1 class="mb-4">Connect your Spotify</h1>
+            <p class="mb-4">To start converting your playlists, we need access to your Spotify account.</p>
+            <a href="/spotify_login" class="btn btn-spotify">
+                <i class="fab fa-spotify"></i>
+                Continue with Spotify
             </a>
+            <p class="mt-4 text-muted">We only access your playlists and won't make any changes without your permission.</p>
         </div>
     </div>
 
-    <footer class="footer mt-auto">
+    <footer class="footer text-center mt-auto">
         <div class="container">
-            <span>&copy; 2024 PlayList Converter. All Rights Reserved.</span>
+            <span>© 2024 PlayList Converter. Made with <i class="fas fa-heart text-danger"></i> for music lovers.</span>
         </div>
     </footer>
-
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

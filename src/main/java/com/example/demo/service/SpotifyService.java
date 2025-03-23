@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -104,23 +105,25 @@ public class SpotifyService {
     }
 
     public Map<String, Object> getPlaylists(int limit, int offset) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(access_token);
 
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(access_token);
+            String url = "https://api.spotify.com/v1/me/playlists?limit=" + limit + "&offset=" + offset;
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        String url = "https://api.spotify.com/v1/me/playlists?limit=" + limit + "&offset=" + offset;
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             return response.getBody();
-        } else {
-            System.out.println("Error: " + response.getStatusCode());
-            return null;
+        } catch (HttpClientErrorException.Unauthorized e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Session expired. Please login again.");
+            return errorResponse;
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to get playlists: " + e.getMessage());
+            return errorResponse;
         }
     }
 
@@ -213,25 +216,25 @@ public class SpotifyService {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(access_token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
-            
+
             String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
             String url = "https://api.spotify.com/v1/search?q=" + encodedQuery + "&type=track&limit=1";
-            
+
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             Map<String, Object> result = response.getBody();
-            
+
             if (result != null && result.containsKey("tracks")) {
                 Map<String, Object> tracks = (Map<String, Object>) result.get("tracks");
                 List<Map<String, Object>> items = (List<Map<String, Object>>) tracks.get("items");
-                
+
                 if (items != null && !items.isEmpty()) {
                     return (String) items.get(0).get("uri");
                 }
             }
-            
+
             // Add delay to avoid rate limiting
             Thread.sleep(1000);
-            
+
         } catch (Exception e) {
             System.out.println("Error searching track: " + e.getMessage());
         }
@@ -248,24 +251,24 @@ public class SpotifyService {
             int batchSize = 50;
             for (int i = 0; i < trackIdUrls.size(); i += batchSize) {
                 List<String> batch = trackIdUrls.subList(i, Math.min(i + batchSize, trackIdUrls.size()));
-                
+
                 String url = "https://api.spotify.com/v1/playlists/" + playListId + "/tracks";
                 HttpClient client = HttpClient.newHttpClient();
                 ObjectMapper objectMapper = new ObjectMapper();
-            
+
                 Map<String, Object> body = new HashMap<>();
                 body.put("uris", batch);
-            
+
                 try {
                     String requestBody = objectMapper.writeValueAsString(body);
-            
+
                     HttpRequest request = HttpRequest.newBuilder()
                             .uri(new URI(url))
                             .header("Content-Type", "application/json")
                             .header("Authorization", "Bearer " + access_token)
                             .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
                             .build();
-            
+
                     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
@@ -277,5 +280,12 @@ public class SpotifyService {
         } catch (Exception e) {
             System.out.println("Error adding tracks: " + e.getMessage());
         }
+    }
+
+    public void clearSession() {
+        this.access_token = null;
+        this.display_name = null;
+        this.image_url = null;
+        this.id = null;
     }
 }

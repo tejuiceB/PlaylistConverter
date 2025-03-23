@@ -15,6 +15,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
 @Service
 public class YoutubeService {
@@ -213,19 +215,21 @@ public class YoutubeService {
 
     public Map<String, Object> getPlayLists() {
         try {
-            // Add delay to avoid quota issues
             Thread.sleep(1000);
-
             String url = "https://www.googleapis.com/youtube/v3/playlists?access_token=" + access_token
                     + "&mine=true&part=snippet&maxResults=50";
+
             RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(access_token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, null, Map.class);
-
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             return response.getBody();
-        } catch (HttpClientErrorException.Forbidden e) {
+
+        } catch (HttpClientErrorException.Unauthorized e) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "YouTube API quota exceeded. Please try again tomorrow.");
+            errorResponse.put("error", "Session expired. Please login again.");
             return errorResponse;
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -242,5 +246,10 @@ public class YoutubeService {
         ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, null, Map.class);
 
         return response.getBody();
+    }
+
+    public void clearSession() {
+        this.access_token = null;
+        this.code = null;
     }
 }

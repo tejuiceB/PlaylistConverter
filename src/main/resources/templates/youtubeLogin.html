@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>PlayList Converter</title>
+    <meta charset="UTF-8">
+    <title>Connect YouTube - PlayList Converter</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
@@ -10,6 +11,9 @@
         html {
             height: 100%;
             margin: 0;
+            background: linear-gradient(135deg, #FF0000 0%, #282828 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
         }
 
         .d-flex {
@@ -28,41 +32,82 @@
             flex-grow: 1;
         }
 
+        .login-container {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .youtube-icon {
+            font-size: 4rem;
+            color: #FF0000;
+            margin-bottom: 20px;
+        }
+
         .btn-youtube {
-            background-color: #FF0000;
+            background: #FF0000;
             color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .btn-youtube:hover {
-            background-color: #CC0000;
+            background: #ff1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
             color: white;
         }
 
         .navbar-brand {
             font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FF0000 0%, #282828 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: #ffffff80;
+            padding: 20px 0;
         }
     </style>
 </head>
 
-<body class="d-flex flex-column">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-center">
-        <a class="navbar-brand" href="#">PlayList Converter</a>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand mx-auto" href="/">PlayList Converter</a>
+        </div>
     </nav>
 
-    
     <div class="container flex-grow-1 d-flex justify-content-center align-items-center">
-        <div class="text-center">
-            <h1 class="display-4">Welcome to PlayList Converter</h1>
-            <p class="lead">Easily convert your Spotify playlists to YouTube with just a few clicks!</p>
-            <a href="/youtube_login" class="btn btn-youtube btn-lg mt-3">
-                <i class="fab fa-youtube"></i> Login to YouTube
+        <div class="login-container">
+            <i class="fab fa-youtube youtube-icon"></i>
+            <h1 class="mb-4">Connect your YouTube</h1>
+            <p class="mb-4">To start converting your playlists, we need access to your YouTube account.</p>
+            <a href="/youtube_login" class="btn btn-youtube">
+                <i class="fab fa-youtube"></i>
+                Continue with YouTube
             </a>
+            <p class="mt-4 text-muted">We only access your playlists and won't make any changes without your permission.</p>
         </div>
     </div>
 
-    <footer class="footer mt-auto py-3 bg-dark text-white">
-        <div class="container text-center">
-            <span>&copy; 2024 PlayList Converter. All Rights Reserved.</span>
+    <footer class="footer text-center mt-auto">
+        <div class="container">
+            <span>© 2024 PlayList Converter. Made with <i class="fas fa-heart text-danger"></i> for music lovers.</span>
         </div>
     </footer>
 
