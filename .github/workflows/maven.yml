@@ -57,14 +57,14 @@ jobs:
       run: mvn test
 
     - name: Generate JaCoCo Coverage Report
-      run: mvn jacoco:report
+      run: mvn jacoco:prepare-agent test jacoco:report
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4  # Updated to v4
+      uses: codecov/codecov-action@v4
       with:
         file: target/site/jacoco/jacoco.xml
         fail_ci_if_error: true
-        token: ${{ secrets.CODECOV_TOKEN }}  # Added token for security
+        token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: SonarCloud Analysis
       if: matrix.java == '17'
