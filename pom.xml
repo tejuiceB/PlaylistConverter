@@ -9,22 +9,28 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
-	<url/>
+	<artifactId>playlist-converter</artifactId>
+	<version>1.0.0</version>
+	<name>PlaylistConverter</name>
+	<description>Web application to convert playlists between Spotify and YouTube</description>
+	<url>https://github.com/yourusername/PlaylistConverter</url>
 	<licenses>
-		<license/>
+		<license>
+			<name>MIT License</name>
+			<url>https://opensource.org/licenses/MIT</url>
+		</license>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<name>Your Name</name>
+			<email>your.email@example.com</email>
+		</developer>
 	</developers>
 	<scm>
-		<connection/>
-		<developerConnection/>
+		<connection>scm:git:git://github.com/yourusername/PlaylistConverter.git</connection>
+		<developerConnection>scm:git:ssh://github.com:yourusername/PlaylistConverter.git</developerConnection>
 		<tag/>
-		<url/>
+		<url>https://github.com/yourusername/PlaylistConverter/tree/main</url>
 	</scm>
 	<properties>
 		<java.version>11</java.version>
