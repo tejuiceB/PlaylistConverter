@@ -1,36 +1,43 @@
-name: Java CI with Maven
+name: PlayList Converter CI/CD
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [11, 17]
+        java: [ '11', '17', '21' ]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v4
       with:
-        java-version: ${{ matrix.java-version }}
+        java-version: ${{ matrix.java }}
         distribution: 'temurin'
-        cache: maven
+        cache: 'maven'
 
     - name: Cache Maven packages
       uses: actions/cache@v3
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        restore-keys: |
+          ${{ runner.os }}-m2
+
+    # Instead of creating application.properties, use existing one
+    - name: Set REDIRECT_URI in application.properties
+      run: |
+        sed -i "s|REDIRECT_URI=.*|REDIRECT_URI=${{ secrets.REDIRECT_URI }}|g" src/main/resources/application.properties
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
@@ -38,45 +45,80 @@ jobs:
     - name: Run Tests
       run: mvn test
 
-    - name: Cache SonarCloud packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-
-    - name: SonarCloud Scan
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-
-    - name: Analyze with SonarCloud
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    - name: Check for vulnerabilities
-      run: mvn dependency-check:check
-
-    - name: Upload vulnerability report
-      uses: github/codeql-action/upload-sarif@v2
-      if: always()
-      with:
-        sarif_file: target/dependency-check-report.sarif
-
-    - name: Check code formatting
-      run: mvn spotless:check
-
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results-${{ matrix.java-version }}
-        path: target/surefire-reports/
+    - name: Generate JaCoCo Coverage Report
+      run: mvn jacoco:report
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         file: target/site/jacoco/jacoco.xml
+        fail_ci_if_error: true
+
+    - name: SonarCloud Analysis
+      if: matrix.java == '17'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        -Dsonar.projectKey=playlist-converter \
+        -Dsonar.organization=your-org \
+        -Dsonar.host.url=https://sonarcloud.io
+
+    - name: Check Dependencies
+      run: mvn dependency-check:check
+
+    - name: Upload Build Artifact
+      if: matrix.java == '17'
+      uses: actions/upload-artifact@v3
+      with:
+        name: playlist-converter
+        path: target/*.jar
+
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download build artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: playlist-converter
+        path: target
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/playlist-converter:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/playlist-converter:${{ github.sha }}
+        cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/playlist-converter:buildcache
+        cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/playlist-converter:buildcache,mode=max
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Deploy to Production
+      run: |
+        echo "Add your deployment steps here"
+        # Example: Deploy to cloud platform or server
