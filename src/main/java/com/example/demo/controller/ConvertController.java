@@ -14,6 +14,12 @@ import com.example.demo.service.YoutubeService;
 @Controller
 public class ConvertController {
 
+    private static final int MAX_BATCH_SIZE = 10;
+    private static final int QUOTA_LIMIT = 9000;
+    private static final int QUOTA_SEARCH = 100;
+    private static final int QUOTA_ADD = 50;
+    private static final int QUOTA_CREATE = 50;
+
     @Autowired
     private YoutubeService youtubeService;
 
@@ -26,66 +32,88 @@ public class ConvertController {
             @RequestParam String playlistName,
             Model model) {
         try {
-            String playListId = null;
-            int retries = 3;
-            while (playListId == null && retries > 0) {
-                playListId = youtubeService.createPlaylist(playlistName);
-                retries--;
-                Thread.sleep(2000);
+            // Check initial quota
+            int estimatedQuota = QUOTA_CREATE + (selectedTracks.size() * (QUOTA_SEARCH + QUOTA_ADD));
+            if (estimatedQuota > QUOTA_LIMIT) {
+                model.addAttribute("error", "Daily quota limit would be exceeded. Please try with fewer tracks or wait.");
+                return "error";
             }
 
+            // Create playlist with retry
+            String playListId = createPlaylistWithRetry(playlistName);
             if (playListId == null) {
-                throw new RuntimeException("Failed to create YouTube playlist after multiple attempts");
+                throw new RuntimeException("Failed to create playlist after multiple attempts");
             }
 
-            // Increase max tracks to 10, with intelligent quota management
-            int maxTracks = Math.min(selectedTracks.size(), 10);
+            // Process in batches
+            int totalTracks = selectedTracks.size();
+            int processedTracks = 0;
             int successCount = 0;
-            int quotaUsed = 50; // Initial quota for playlist creation
+            int quotaUsed = QUOTA_CREATE;
 
-            for (int i = 0; i < maxTracks; i++) {
-                try {
-                    // Check remaining quota
-                    if (quotaUsed >= 9000) { // YouTube daily limit is 10,000
-                        model.addAttribute("warning",
-                                "Daily quota limit approaching. Processed " + successCount + " tracks.");
+            while (processedTracks < totalTracks) {
+                int batchSize = Math.min(MAX_BATCH_SIZE, totalTracks - processedTracks);
+                int batchEnd = processedTracks + batchSize;
+                
+                // Process batch
+                for (int i = processedTracks; i < batchEnd; i++) {
+                    if (quotaUsed >= QUOTA_LIMIT) {
+                        model.addAttribute("warning", 
+                            String.format("Quota limit reached. Processed %d of %d tracks.", successCount, totalTracks));
                         break;
                     }
 
                     String track = selectedTracks.get(i);
                     String artist = selectedArtists.get(i);
-                    String searchQuery = String.format("%s - %s official audio", artist, track);
-
-                    // Search costs 100 units
-                    String trackId = youtubeService.getVideoID(searchQuery);
-                    quotaUsed += 100;
-
-                    if (trackId != null) {
-                        // Add to playlist costs 50 units
-                        youtubeService.addTrack(trackId, playListId);
-                        quotaUsed += 50;
+                    if (processSingleTrack(track, artist, playListId)) {
                         successCount++;
-                        Thread.sleep(1500); // Reduced delay between tracks
                     }
-                } catch (Exception e) {
-                    System.out.println("Error processing track " + (i + 1) + ": " + e.getMessage());
+                    quotaUsed += (QUOTA_SEARCH + QUOTA_ADD);
                 }
+
+                processedTracks = batchEnd;
+                Thread.sleep(2000); // Delay between batches
             }
 
-            if (successCount == 0) {
-                throw new RuntimeException("No tracks were successfully added to the playlist");
-            }
-
+            // Return results
             String url = "https://www.youtube.com/playlist?list=" + playListId;
             model.addAttribute("url", url);
             model.addAttribute("successCount", successCount);
-            model.addAttribute("totalTracks", maxTracks);
+            model.addAttribute("totalTracks", totalTracks);
             return "spotifyConvertResult";
 
         } catch (Exception e) {
             model.addAttribute("error", "Conversion failed: " + e.getMessage());
             return "error";
         }
+    }
+
+    private String createPlaylistWithRetry(String name) throws InterruptedException {
+        int retries = 3;
+        String playlistId = null;
+        while (playlistId == null && retries > 0) {
+            try {
+                playlistId = youtubeService.createPlaylist(name);
+            } catch (Exception e) {
+                retries--;
+                if (retries > 0) Thread.sleep(2000);
+            }
+        }
+        return playlistId;
+    }
+
+    private boolean processSingleTrack(String track, String artist, String playlistId) {
+        try {
+            String searchQuery = String.format("%s - %s official audio", artist, track);
+            String trackId = youtubeService.getVideoID(searchQuery);
+            if (trackId != null) {
+                youtubeService.addTrack(trackId, playlistId);
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println("Error processing track: " + track + " - " + e.getMessage());
+        }
+        return false;
     }
 
     @PostMapping("/youtube_convert")

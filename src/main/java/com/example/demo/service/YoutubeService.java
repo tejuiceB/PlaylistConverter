@@ -249,6 +249,31 @@ public class YoutubeService {
         return response.getBody();
     }
 
+    public Map<String, Object> getUserInfo() {
+        try {
+            String url = "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true&access_token=" + access_token;
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(access_token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            Map<String, Object> body = response.getBody();
+            
+            if (body != null && body.containsKey("items")) {
+                List<Map<String, Object>> items = (List<Map<String, Object>>) body.get("items");
+                if (!items.isEmpty()) {
+                    Map<String, Object> channel = items.get(0);
+                    Map<String, Object> snippet = (Map<String, Object>) channel.get("snippet");
+                    return Map.of("name", snippet.get("title"));
+                }
+            }
+            return Map.of("name", "YouTube User");
+        } catch (Exception e) {
+            return Map.of("name", "YouTube User");
+        }
+    }
+
     public void clearSession() {
         this.access_token = null;
         this.code = null;

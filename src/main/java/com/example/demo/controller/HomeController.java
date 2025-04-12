@@ -53,8 +53,11 @@ public class HomeController {
         if (code != null) {
             youtubeService.setCode(code);
             youtubeService.exchangeCodeForToken();
+            // Get YouTube username from the service
+            Map<String, Object> userInfo = youtubeService.getUserInfo();
+            session.setAttribute("youtube_username", userInfo.get("name"));
             session.setAttribute("youtube_authenticated", true);
-            return "redirect:/youtube_playlists"; // Changed this line
+            return "redirect:/"; // Redirect back to landing
         }
         return "redirect:/";
     }
@@ -66,7 +69,7 @@ public class HomeController {
             spotifyService.exchangeCodeForToken();
             spotifyService.setCurrentUser();
             session.setAttribute("spotify_authenticated", true);
-            return "redirect:/spotify_playlists"; // Changed this line
+            return "redirect:/"; // Redirect back to landing
         }
         return "redirect:/";
     }

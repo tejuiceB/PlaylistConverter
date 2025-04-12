@@ -145,23 +145,34 @@
         <div class="container d-flex justify-content-between align-items-center">
             <a class="navbar-brand gradient-bg" href="#">PlayList Converter</a>
             <div class="d-flex align-items-center">
-                <div th:if="${spotifyAuthenticated}" class="dropdown mx-2">
-                    <img th:src="${spotifyProfileImage}" alt="Spotify Profile" 
-                         class="rounded-circle" style="width: 40px; height: 40px; cursor: pointer"
-                         data-toggle="dropdown">
-                    <div class="dropdown-menu">
-                        <span class="dropdown-item-text" th:text="${spotifyUsername}"></span>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/spotify_login">Switch Account</a>
-                        <a class="dropdown-item" href="/logout?service=spotify">Logout from Spotify</a>
+                <!-- Service status indicators -->
+                <div class="d-flex align-items-center me-3">
+                    <div th:if="${spotifyAuthenticated}" class="mx-2">
+                        <div class="dropdown">
+                            <img th:src="${spotifyProfileImage}" alt="Spotify Profile" 
+                                 class="rounded-circle" style="width: 40px; height: 40px; cursor: pointer"
+                                 data-toggle="dropdown">
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="dropdown-item-text" th:text="${spotifyUsername}"></span>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout?service=spotify">
+                                    <i class="fas fa-sign-out-alt"></i> Logout from Spotify
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div th:if="${youtubeAuthenticated}" class="dropdown mx-2">
-                    <i class="fab fa-youtube fa-2x text-danger" style="cursor: pointer"
-                       data-toggle="dropdown"></i>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="/youtube_login">Switch Account</a>
-                        <a class="dropdown-item" href="/logout?service=youtube">Logout from YouTube</a>
+                    <div th:if="${youtubeAuthenticated}" class="mx-2">
+                        <div class="dropdown">
+                            <i class="fab fa-youtube fa-2x text-danger" style="cursor: pointer"
+                               data-toggle="dropdown"></i>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="dropdown-item-text">YouTube Connected</span>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout?service=youtube">
+                                    <i class="fas fa-sign-out-alt"></i> Logout from YouTube
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -174,60 +185,66 @@
                 <h1 class="display-3 mb-4 gradient-bg">Transform Your Music Experience</h1>
                 <p class="lead mb-5">Seamlessly convert playlists between Spotify and YouTube with just a few clicks.</p>
                 
-                <div class="row justify-content-center">
-                    <!-- Service Connection Cards -->
-                    <div class="col-md-5">
+                <!-- Show either auth options or conversion options -->
+                <div th:if="${!spotifyAuthenticated || !youtubeAuthenticated}" class="row justify-content-center">
+                    <div class="col-md-8">
                         <div class="card">
-                            <h3 class="mb-4">Spotify Account</h3>
-                            <div th:if="${!spotifyAuthenticated}">
-                                <a href="/spotify_login" class="conversion-btn btn-spotify">
-                                    <i class="fab fa-spotify"></i>
+                            <h2 class="text-center mb-4">Connect Your Accounts</h2>
+                            <div class="d-flex justify-content-around">
+                                <a th:if="${!spotifyAuthenticated}" href="/spotify_login" class="btn btn-lg btn-spotify" style="width: 45%">
+                                    <i class="fab fa-spotify me-2"></i>
                                     Connect Spotify
                                 </a>
-                            </div>
-                            <div th:if="${spotifyAuthenticated}" class="text-center">
-                                <img th:src="${spotifyProfileImage}" alt="Spotify Profile" 
-                                     class="rounded-circle mb-3" style="width: 64px; height: 64px;">
-                                <p class="mb-3" th:text="${spotifyUsername}"></p>
-                                <a href="/logout?service=spotify" class="btn btn-outline-danger btn-sm">
-                                    <i class="fas fa-sign-out-alt"></i> Disconnect
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-5">
-                        <div class="card">
-                            <h3 class="mb-4">YouTube Account</h3>
-                            <div th:if="${!youtubeAuthenticated}">
-                                <a href="/youtube_login" class="conversion-btn btn-youtube">
-                                    <i class="fab fa-youtube"></i>
+                                <a th:if="${!youtubeAuthenticated}" href="/youtube_login" class="btn btn-lg btn-youtube" style="width: 45%">
+                                    <i class="fab fa-youtube me-2"></i>
                                     Connect YouTube
-                                </a>
-                            </div>
-                            <div th:if="${youtubeAuthenticated}" class="text-center">
-                                <i class="fab fa-youtube fa-4x text-danger mb-3"></i>
-                                <p class="mb-3">YouTube Connected</p>
-                                <a href="/logout?service=youtube" class="btn btn-outline-danger btn-sm">
-                                    <i class="fas fa-sign-out-alt"></i> Disconnect
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Convert Buttons - Only show when both services are authenticated -->
-                <div th:if="${spotifyAuthenticated && youtubeAuthenticated}" class="row justify-content-center mt-5">
-                    <div class="col-md-10">
+                <!-- Show conversion options only when both services are authenticated -->
+                <div th:if="${spotifyAuthenticated && youtubeAuthenticated}" class="row justify-content-center">
+                    <div class="col-md-8">
                         <div class="card">
-                            <h3 class="mb-4">Convert Your Playlists</h3>
+                            <h2 class="text-center mb-4">Choose Conversion Direction</h2>
                             <div class="d-flex justify-content-around">
-                                <a href="/spotify_playlists" class="btn btn-lg btn-spotify mx-2">
-                                    <i class="fab fa-spotify"></i> Spotify to YouTube
+                                <a href="/spotify_playlists" class="btn btn-lg btn-spotify" style="width: 45%">
+                                    <i class="fab fa-spotify me-2"></i>
+                                    <i class="fas fa-arrow-right mx-2"></i>
+                                    <i class="fab fa-youtube"></i>
+                                    <span class="d-block mt-2">Spotify to YouTube</span>
                                 </a>
-                                <a href="/youtube_playlists" class="btn btn-lg btn-youtube mx-2">
-                                    <i class="fab fa-youtube"></i> YouTube to Spotify
+                                <a href="/youtube_playlists" class="btn btn-lg btn-youtube" style="width: 45%">
+                                    <i class="fab fa-youtube me-2"></i>
+                                    <i class="fas fa-arrow-right mx-2"></i>
+                                    <i class="fab fa-spotify"></i>
+                                    <span class="d-block mt-2">YouTube to Spotify</span>
                                 </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add About Bar -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="card bg-dark text-white">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3 text-center">
+                                        <h4>About PlayList Converter</h4>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-0">Convert your playlists seamlessly between Spotify and YouTube. Our service handles the conversion process efficiently while respecting API quotas.</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <a href="https://github.com/tejuiceB/PlaylistConverter" target="_blank" class="btn btn-outline-light">
+                                            <i class="fab fa-github"></i> Learn More
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
