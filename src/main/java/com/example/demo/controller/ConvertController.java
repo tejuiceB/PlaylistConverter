@@ -35,7 +35,8 @@ public class ConvertController {
             // Check initial quota
             int estimatedQuota = QUOTA_CREATE + (selectedTracks.size() * (QUOTA_SEARCH + QUOTA_ADD));
             if (estimatedQuota > QUOTA_LIMIT) {
-                model.addAttribute("error", "Daily quota limit would be exceeded. Please try with fewer tracks or wait.");
+                model.addAttribute("error",
+                        "Daily quota limit would be exceeded. Please try with fewer tracks or wait.");
                 return "error";
             }
 
@@ -54,12 +55,13 @@ public class ConvertController {
             while (processedTracks < totalTracks) {
                 int batchSize = Math.min(MAX_BATCH_SIZE, totalTracks - processedTracks);
                 int batchEnd = processedTracks + batchSize;
-                
+
                 // Process batch
                 for (int i = processedTracks; i < batchEnd; i++) {
                     if (quotaUsed >= QUOTA_LIMIT) {
-                        model.addAttribute("warning", 
-                            String.format("Quota limit reached. Processed %d of %d tracks.", successCount, totalTracks));
+                        model.addAttribute("warning",
+                                String.format("Quota limit reached. Processed %d of %d tracks.", successCount,
+                                        totalTracks));
                         break;
                     }
 
@@ -96,7 +98,8 @@ public class ConvertController {
                 playlistId = youtubeService.createPlaylist(name);
             } catch (Exception e) {
                 retries--;
-                if (retries > 0) Thread.sleep(2000);
+                if (retries > 0)
+                    Thread.sleep(2000);
             }
         }
         return playlistId;

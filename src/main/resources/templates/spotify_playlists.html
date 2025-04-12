@@ -7,78 +7,128 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
-        body,
-        html {
+        body, html {
             height: 100%;
             margin: 0;
-        }
-
-        .d-flex {
-            display: flex;
-        }
-
-        .flex-column {
-            flex-direction: column;
-        }
-
-        .justify-content-center {
-            justify-content: center;
-        }
-
-        .flex-grow-1 {
-            flex-grow: 1;
-        }
-
-        .btn-spotify {
-            background-color: #1DB954;
+            background: #121212;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
         }
 
-        .btn-spotify:hover {
-            background-color: #1AA34A;
-            color: white;
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px);
         }
 
-        .navbar-brand {
-            font-size: 2rem;
+        .gradient-bg {
+            background: linear-gradient(135deg, #1DB954 0%, #FF0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .footer {
-            background-color: #343a40;
-            color: white;
-            text-align: center;
-            padding: 1rem 0;
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
         table {
-            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
         }
 
-        th,
-        td {
-            padding: 10px;
-            text-align: left;
+        .table thead th {
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+        }
+
+        .table td {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .table-hover tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-spotify {
+            background: #1DB954;
+            color: white;
+            border-radius: 50px;
+            padding: 10px 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-spotify:hover {
+            background: #1ed760;
+            transform: scale(1.05);
+            color: white;
         }
 
         .welcome-message {
-            margin-top: 20px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
         }
 
-        .user-image {
-            height: 64px;
-            width: 64px;
-            border-radius: 50%;
-            margin-right: 10px;
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
 
 <body class="d-flex flex-column">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-center">
-        <a class="navbar-brand" href="#">PlayList Converter</a>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand gradient-bg" href="/">PlayList Converter</a>
+                <a href="/" class="btn btn-outline-light ms-3">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            </div>
+            <div class="d-flex align-items-center">
+                <div th:if="${spotifyAuthenticated}" class="mx-2">
+                    <div class="dropdown">
+                        <img th:src="${image_url}" alt="Spotify Profile" 
+                             class="rounded-circle" style="width: 40px; height: 40px; cursor: pointer"
+                             data-toggle="dropdown">
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <span class="dropdown-item-text" th:text="${username}"></span>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/logout?service=spotify">
+                                <i class="fas fa-sign-out-alt"></i> Logout from Spotify
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${youtubeAuthenticated}" class="mx-2">
+                    <div class="dropdown">
+                        <i class="fab fa-youtube fa-2x text-danger" style="cursor: pointer"
+                           data-toggle="dropdown"></i>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <span class="dropdown-item-text">YouTube Connected</span>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/logout?service=youtube">
+                                <i class="fas fa-sign-out-alt"></i> Logout from YouTube
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </nav>
 
     <div class="container flex-grow-1 d-flex flex-column align-items-center">

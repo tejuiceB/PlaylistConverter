@@ -6,7 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;  // Added this import
+import java.util.List; // Added this import
 import java.util.Map;
 import java.net.http.HttpRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -251,7 +251,8 @@ public class YoutubeService {
 
     public Map<String, Object> getUserInfo() {
         try {
-            String url = "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true&access_token=" + access_token;
+            String url = "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true&access_token="
+                    + access_token;
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(access_token);
@@ -259,7 +260,7 @@ public class YoutubeService {
 
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             Map<String, Object> body = response.getBody();
-            
+
             if (body != null && body.containsKey("items")) {
                 List<Map<String, Object>> items = (List<Map<String, Object>>) body.get("items");
                 if (!items.isEmpty()) {
