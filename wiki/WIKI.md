@@ -115,7 +115,6 @@ For detailed architecture information, see our [Architecture Documentation](../d
 ## Support Resources
 
 ### Getting Help
-- Technical Support: tech.support@playlistconverter.com
 - Feature Requests: features@playlistconverter.com
 - Bug Reports: bugs@playlistconverter.com
 - Privacy Concerns: [Privacy Policy](../docs/PRIVACY.md)
