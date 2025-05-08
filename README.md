@@ -187,7 +187,6 @@ For detailed development setup instructions, visit our [Wiki](wiki/WIKI.md).
 ![Screenshot (37)](https://github.com/user-attachments/assets/fad963d9-ed86-462a-a222-23075aaf240c)
 
 ## Community
-- Join our Telegram group: [PlaylistConverter Community](https://t.me/+TwGNOCbIKrM5M2I1)
 - Check out our [Contributing Guidelines](https://github.com/tejuiceB/PlaylistConverter/blob/main/CONTRIBUTING.md)
 
 
