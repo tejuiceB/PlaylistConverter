@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Terms and Conditions - PlayList Converter</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            min-height: 100%;
+            background: #121212;
+            color: white;
+        }
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(10px);
+        }
+        .content {
+            padding-top: 80px;
+            padding-bottom: 40px;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1DB954 0%, #FF0000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .footer {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        h2, h3 {
+            color: #1DB954;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand gradient-bg" href="/">PlayList Converter</a>
+            <a href="/" class="btn btn-outline-light">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="container content">
+        <h1 class="mb-4 gradient-bg">Terms and Conditions</h1>
+
+        <section>
+            <h2>1. Acceptance of Terms</h2>
+            <p>By accessing and using PlayList Converter, you agree to be bound by these terms and conditions.</p>
+        </section>
+
+        <section>
+            <h2>2. Service Description</h2>
+            <p>PlayList Converter provides playlist conversion services between Spotify and YouTube platforms.</p>
+        </section>
+
+        <section>
+            <h2>3. User Obligations</h2>
+            <ul>
+                <li>You must provide accurate information</li>
+                <li>You are responsible for maintaining account security</li>
+                <li>You agree to use the service within reasonable limits</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>4. API Usage</h2>
+            <p>The service is subject to YouTube and Spotify API quotas and limitations.</p>
+        </section>
+
+        <section>
+            <h2>5. Data Usage</h2>
+            <p>We only access and process the minimum required data for playlist conversion.</p>
+        </section>
+
+        <section>
+            <h2>6. Limitations</h2>
+            <ul>
+                <li>Maximum 10 tracks per conversion</li>
+                <li>Daily conversion limits apply</li>
+                <li>Service availability subject to API quotas</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>7. Disclaimer</h2>
+            <p>The service is provided "as is" without warranties of any kind.</p>
+        </section>
+    </div>
+
+    <footer class="footer mt-5">
+        <div class="container py-3">
+            <span>© 2024 PlayList Converter. All Rights Reserved.</span>
+            <div class="float-right">
+                <a href="/terms" class="text-white mx-2">Terms</a>
+                <a href="/privacy" class="text-white mx-2">Privacy</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
