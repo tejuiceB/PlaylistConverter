@@ -8,6 +8,7 @@
 - **Playlist Transfer**: Easily transfer playlists from Spotify to YouTube or from YouTube to Spotify.
 - **Seamless Integration**: Uses the Spotify Web API and YouTube Data API v3 to fetch and manage playlists.
 - **User-Friendly Interface**: A simple and intuitive interface built with Thymeleaf.
+- **Cloud Deployment on AWS**: Deployed on AWS EC2 with Nginx reverse proxy and SSL, demonstrating hands-on experience with AWS cloud infrastructure, server provisioning, and production DevOps.
 
 ## Technologies Used
 
@@ -16,7 +17,8 @@
 - **Thymeleaf**: Used for server-side rendering of the frontend.
 - **Spotify Web API**: Fetches and manages Spotify playlists.
 - **YouTube Data API v3**: Fetches and manages YouTube playlists.
-- **OAuth**: Secure authentication for accessing user accounts.
+- **AWS EC2**: Cloud hosting for scalable and reliable deployment.
+- **Nginx**: Reverse proxy and SSL termination.
 
 ## YouTube API Quota Information
 - Create playlist: 50 units
