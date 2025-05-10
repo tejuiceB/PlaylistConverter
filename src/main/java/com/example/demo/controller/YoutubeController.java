@@ -12,13 +12,17 @@ import com.example.demo.service.YoutubeService;
 
 @Controller
 public class YoutubeController {
-    
+
     @Autowired
     YoutubeService youtubeService;
 
     @GetMapping("youtube_playlists")
-    public String getYoutubePlaylists(Model model) {
+    public String getYoutubePlaylists(Model model, javax.servlet.http.HttpSession session) {
         Map<String, Object> playlists = youtubeService.getPlayLists();
+        if (playlists.containsKey("error")) {
+            session.removeAttribute("youtube_authenticated");
+            return "redirect:/youtube_login";
+        }
         model.addAttribute("playlists", playlists);
         return "youtube_playlists";
     }

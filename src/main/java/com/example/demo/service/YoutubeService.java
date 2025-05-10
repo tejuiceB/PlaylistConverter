@@ -226,7 +226,23 @@ public class YoutubeService {
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-            return response.getBody();
+
+            // Handle expired/invalid token
+            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "Session expired. Please login again.");
+                return errorResponse;
+            }
+
+            Map<String, Object> body = response.getBody();
+            if (body != null && body.containsKey("error")) {
+                // If YouTube API returns an error, handle it gracefully
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "YouTube API error: " + body.get("error"));
+                return errorResponse;
+            }
+
+            return body;
 
         } catch (HttpClientErrorException.Unauthorized e) {
             Map<String, Object> errorResponse = new HashMap<>();

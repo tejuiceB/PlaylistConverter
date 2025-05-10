@@ -43,7 +43,9 @@ public class ConvertController {
             // Create playlist with retry
             String playListId = createPlaylistWithRetry(playlistName);
             if (playListId == null) {
-                throw new RuntimeException("Failed to create playlist after multiple attempts");
+                model.addAttribute("error",
+                        "Failed to create YouTube playlist. Please check your quota or try again later.");
+                return "error";
             }
 
             // Process in batches
@@ -122,20 +124,31 @@ public class ConvertController {
     @PostMapping("/youtube_convert")
     public String convertYoutubeTracks(@RequestParam List<String> selectedTracks, @RequestParam String playlistName,
             Model model) {
-
-        String playListId = spotifyService.createPlaylist(playlistName);
-
-        List<String> trackIdUrls = new ArrayList<>();
-
-        for (String track : selectedTracks) {
-            String trackIdUrl = spotifyService.getTrackUrl(track);
-            trackIdUrls.add(trackIdUrl);
+        try {
+            String playListId = spotifyService.createPlaylist(playlistName);
+            if (playListId == null) {
+                model.addAttribute("error",
+                        "Failed to create Spotify playlist. Please check your quota or try again later.");
+                return "error";
+            }
+            List<String> trackIdUrls = new ArrayList<>();
+            for (String track : selectedTracks) {
+                String trackIdUrl = spotifyService.getTrackUrl(track);
+                if (trackIdUrl != null) {
+                    trackIdUrls.add(trackIdUrl);
+                }
+            }
+            if (trackIdUrls.isEmpty()) {
+                model.addAttribute("error", "No matching tracks found on Spotify.");
+                return "error";
+            }
+            spotifyService.addTracks(trackIdUrls, playListId);
+            String url = "https://open.spotify.com/playlist/" + playListId;
+            model.addAttribute("url", url);
+            return "youtubeConvertResult";
+        } catch (Exception e) {
+            model.addAttribute("error", "Conversion failed: " + e.getMessage());
+            return "error";
         }
-
-        spotifyService.addTracks(trackIdUrls, playListId);
-
-        String url = "https://open.spotify.com/playlist/" + playListId;
-        model.addAttribute("url", url);
-        return "youtubeConvertResult";
     }
 }
