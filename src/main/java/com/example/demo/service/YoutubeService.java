@@ -41,6 +41,7 @@ public class YoutubeService {
 
     private String code;
     private String access_token;
+    private String email; // Add this field
 
     public String getAccess_token() {
         return access_token;
@@ -48,18 +49,38 @@ public class YoutubeService {
 
     public void setAccess_token(String access_token) {
         this.access_token = access_token;
+        // Fetch email after setting access token
+        try {
+            String url = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + access_token;
+            RestTemplate restTemplate = new RestTemplate();
+            Map<String, Object> userInfo = restTemplate.getForObject(url, Map.class);
+            if (userInfo != null && userInfo.containsKey("email")) {
+                email = (String) userInfo.get("email");
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to fetch YouTube email: " + e.getMessage());
+        }
     }
 
     public void setCode(String code) {
         this.code = code;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public String getLoginUrl() {
+        // Add userinfo.email scope if not already present
+        String fullScope = scope;
+        if (!fullScope.contains("https://www.googleapis.com/auth/userinfo.email")) {
+            fullScope += " https://www.googleapis.com/auth/userinfo.email";
+        }
         return "https://accounts.google.com/o/oauth2/v2/auth?" +
                 "client_id=" + URLEncoder.encode(client_id, StandardCharsets.UTF_8) +
                 "&redirect_uri=" + URLEncoder.encode(redirect_uri, StandardCharsets.UTF_8) +
                 "&response_type=" + URLEncoder.encode(response_type, StandardCharsets.UTF_8) +
-                "&scope=" + URLEncoder.encode(scope, StandardCharsets.UTF_8);
+                "&scope=" + URLEncoder.encode(fullScope, StandardCharsets.UTF_8);
     }
 
     public String getTokenUrl() {

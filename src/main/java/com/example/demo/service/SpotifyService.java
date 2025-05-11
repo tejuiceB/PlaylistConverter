@@ -46,6 +46,7 @@ public class SpotifyService {
     private String display_name;
     private String id;
     private String image_url;
+    private String email; // Add this field
 
     public String getImage_url() {
         return image_url;
@@ -165,6 +166,7 @@ public class SpotifyService {
 
         display_name = (String) user.get("display_name");
         id = (String) user.get("id");
+        email = (String) user.get("email"); // Add this line
 
         List images = (List) user.get("images");
         Map<String, Object> image = (Map<String, Object>) images.get(0);
@@ -177,6 +179,10 @@ public class SpotifyService {
 
     public String getId() {
         return id;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String createPlaylist(String playlistName) {
